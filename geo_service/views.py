@@ -1,3 +1,11 @@
-from django.shortcuts import render
+from rest_framework import generics
 
-# Create your views here.
+from geo_service.models import Place
+from geo_service.serializers import PlaceSerializer
+
+
+class PlaceListAPIView(generics.ListCreateAPIView):
+    queryset = Place.objects.all()
+    serializer_class = PlaceSerializer
+
+
