@@ -6,7 +6,12 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from geo_service.models import Place
-from geo_service.serializers import PlaceSerializer, NearestPointSerializer, PlaceListSerializer, PlaceDetailSerializer
+from geo_service.serializers import (
+    NearestPointSerializer,
+    PlaceListSerializer,
+    PlaceDetailSerializer,
+    PlaceCreateSerializer,
+)
 
 
 class PlaceViewSet(viewsets.ModelViewSet):
@@ -15,11 +20,11 @@ class PlaceViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "get_nearest_point":
             return NearestPointSerializer
-        if self.action in ["create", "list"]:
+        if self.action == "list":
             return PlaceListSerializer
         if self.action in ["retrieve", "update", "partial_update", "destroy"]:
             return PlaceDetailSerializer
-        return PlaceSerializer
+        return PlaceCreateSerializer
 
     @action(detail=False, methods=["get"])
     def get_nearest_point(self, request):
@@ -28,9 +33,13 @@ class PlaceViewSet(viewsets.ModelViewSet):
         distance = request.query_params.get("distance")
 
         point = Point(longitude, latitude, srid=4326)
-        nearest_point = Place.objects.annotate(distance=Distance("geom", point))
+        nearest_point = Place.objects.annotate(
+            distance=Distance("geom", point)
+        )
         if distance:
-            nearest_point = nearest_point.filter(distance__lte=DistanceMeasure(m=int(distance)))
+            nearest_point = nearest_point.filter(
+                distance__lte=DistanceMeasure(m=int(distance))
+            )
         nearest_point = nearest_point.order_by("distance").first()
 
         if nearest_point:
@@ -39,5 +48,5 @@ class PlaceViewSet(viewsets.ModelViewSet):
         else:
             return Response(
                 {"detail": "No nearest point found."},
-                status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )

@@ -12,9 +12,7 @@ class PlaceSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "description", "latitude", "longitude")
 
 
-class PlaceListSerializer(PlaceSerializer):
-    description = serializers.SerializerMethodField()
-
+class PlaceCreateSerializer(PlaceSerializer):
     def create(self, validated_data):
         name = validated_data.get("name")
         description = validated_data.get("description")
@@ -25,6 +23,10 @@ class PlaceListSerializer(PlaceSerializer):
         )
         return place
 
+
+class PlaceListSerializer(PlaceSerializer):
+    description = serializers.SerializerMethodField()
+
     @staticmethod
     def get_description(obj):
         words = obj.description.split()
@@ -32,9 +34,8 @@ class PlaceListSerializer(PlaceSerializer):
 
 
 class PlaceDetailSerializer(PlaceSerializer):
-
     def update(self, instance, validated_data):
-        geom = validated_data.pop("geom", None)
+        geom = validated_data.pop("geom")
         latitude = geom.get("y")
         longitude = geom.get("x")
         if latitude is not None and longitude is not None:

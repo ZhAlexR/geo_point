@@ -39,8 +39,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis",
     "django_extensions",
-    'rest_framework',
-    "geo_service"
+    "rest_framework",
+    "geo_service",
 ]
 
 MIDDLEWARE = [
@@ -58,8 +58,7 @@ ROOT_URLCONF = "geo_point.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates']
-        ,
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
