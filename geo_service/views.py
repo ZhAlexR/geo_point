@@ -1,11 +1,9 @@
-from rest_framework import generics
+from rest_framework import viewsets
 
 from geo_service.models import Place
 from geo_service.serializers import PlaceSerializer
 
 
-class PlaceListAPIView(generics.ListCreateAPIView):
+class PlaceViewSet(viewsets.ModelViewSet):
     queryset = Place.objects.all()
     serializer_class = PlaceSerializer
-
-
