@@ -11,6 +11,10 @@ class PlaceSerializer(serializers.ModelSerializer):
         model = Place
         fields = ("id", "name", "description", "latitude", "longitude")
 
+
+class PlaceListSerializer(PlaceSerializer):
+    description = serializers.SerializerMethodField()
+
     def create(self, validated_data):
         name = validated_data.get("name")
         description = validated_data.get("description")
@@ -21,6 +25,14 @@ class PlaceSerializer(serializers.ModelSerializer):
         )
         return place
 
+    @staticmethod
+    def get_description(obj):
+        words = obj.description.split()
+        return " ".join(words[:10])
+
+
+class PlaceDetailSerializer(PlaceSerializer):
+
     def update(self, instance, validated_data):
         geom = validated_data.pop("geom", None)
         latitude = geom.get("y")
@@ -28,3 +40,16 @@ class PlaceSerializer(serializers.ModelSerializer):
         if latitude is not None and longitude is not None:
             instance.geom = Point(longitude, latitude)
         return super().update(instance, validated_data)
+
+
+class NearestPointSerializer(PlaceSerializer):
+    distance = serializers.SerializerMethodField()
+
+    class Meta(PlaceSerializer.Meta):
+        fields = PlaceSerializer.Meta.fields + ("distance",)
+
+    @staticmethod
+    def get_distance(obj):
+        if hasattr(obj, "distance"):
+            return obj.distance.m
+        return None
