@@ -71,7 +71,7 @@ When PostgreSQL is installed perform next steps:
 
 ### Project settings stage
 ```shell
-git clone git@github.com:ZhAlexR/#
+git clone git@github.com:ZhAlexR/geo_point.git
 cd geo_point
 python3 -m venv venv
 source venv/bin/activete # for linux or macOS
@@ -110,7 +110,7 @@ python manage.py runserver
 
 If you don't have Docker - [install it](https://docs.docker.com/get-docker/)
 ```shell
-git clone git@github.com:ZhAlexR/#
+git clone git@github.com:ZhAlexR/geo_point.git
 cd geo_point
 ```
 
