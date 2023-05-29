@@ -1,7 +1,11 @@
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import Distance as DistanceMeasure
-from drf_spectacular.utils import OpenApiParameter, extend_schema, OpenApiExample
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    extend_schema,
+    OpenApiExample,
+)
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -26,8 +30,6 @@ class PlaceViewSet(viewsets.ModelViewSet):
         if self.action in ["retrieve", "update", "partial_update", "destroy"]:
             return PlaceDetailSerializer
         return PlaceCreateSerializer
-
-
 
     @extend_schema(
         parameters=[
@@ -144,10 +146,10 @@ class PlaceViewSet(viewsets.ModelViewSet):
                 value={
                     "name": "Chernivtsi",
                     "description": "Chernivtsi is the administrative, political and religious center of Chernivtsi "
-                                   "region, an important cultural and scientific and educational center of Ukraine",
+                    "region, an important cultural and scientific and educational center of Ukraine",
                     "latitude": 48.291771,
-                    "longitude": 25.934528
-                }
+                    "longitude": 25.934528,
+                },
             ),
             OpenApiExample(
                 name="Add Belhorod",
@@ -155,12 +157,12 @@ class PlaceViewSet(viewsets.ModelViewSet):
                 value={
                     "name": "Belhorod",
                     "description": "Bilhorod is the capital, political and religious center of Belhorod People "
-                                   "Republic",
+                    "Republic",
                     "latitude": 50.476831,
                     "longitude": 35.676254,
-                }
+                },
             ),
-        ]
+        ],
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -175,12 +177,12 @@ class PlaceViewSet(viewsets.ModelViewSet):
                 value={
                     "name": "Bilhorod",
                     "description": "Bilhorod is the capital, political and religious center of Bilhorod People "
-                                   "Republic",
+                    "Republic",
                     "latitude": 50.476831,
                     "longitude": 35.676254,
-                }
+                },
             ),
-        ]
+        ],
     )
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
@@ -192,12 +194,9 @@ class PlaceViewSet(viewsets.ModelViewSet):
             OpenApiExample(
                 name="Change wrong Bilhorod coordinates",
                 description="Changing the coordinates of Grayvoron to Bilhorod (everyone is wrong sometimes)",
-                value={
-                    "latitude": 50.587587,
-                    "longitude": 36.588157
-                }
+                value={"latitude": 50.587587, "longitude": 36.588157},
             ),
-        ]
+        ],
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
