@@ -23,6 +23,24 @@ class PlaceSerializer(serializers.ModelSerializer):
 
         return srid
 
+    def validate(self, attrs):
+        latitude = attrs.get("geom").get("y")
+        longitude = attrs.get("geom").get("x")
+        srid = attrs.get("geom").get("srid")
+
+        point = self._create_point(longitude=longitude, latitude=latitude, srid=srid)
+        if point.y < -180 or point.y > 180:
+            raise serializers.ValidationError("Latitude is incorrect.")
+        if point.x < -180 or point.y > 180:
+            raise serializers.ValidationError("Longitude is incorrect.")
+        return attrs
+
+    @staticmethod
+    def _create_point(longitude: float, latitude: float, srid: int) -> Point:
+        point = Point(x=longitude, y=latitude, srid=srid)
+        if srid != settings.DEFAULT_SRID:
+            point.transform(settings.DEFAULT_SRID)
+        return point
 
 
 class PlaceCreateSerializer(PlaceSerializer):
@@ -32,12 +50,14 @@ class PlaceCreateSerializer(PlaceSerializer):
         latitude = validated_data.get("geom").get("y")
         longitude = validated_data.get("geom").get("x")
         srid = validated_data.get("geom").get("srid")
-        point = Point(x=longitude, y=latitude, srid=srid)
-        point.transform(settings.DEFAULT_SRID)
         place = Place.objects.create(
             name=name,
             description=description,
-            geom=point
+            geom=self._create_point(
+                longitude=longitude,
+                latitude=latitude,
+                srid=srid
+            )
         )
         return place
 
@@ -56,11 +76,12 @@ class PlaceDetailSerializer(PlaceSerializer):
         geom = validated_data.pop("geom")
         latitude = geom.get("y")
         longitude = geom.get("x")
-        if latitude is not None and longitude is not None:
-            instance.geom = Point(
-                x=longitude,
-                y=latitude,
-                srid=settings.DEFAULT_SRID
+        srid = geom.get("srid")
+        if all([latitude, longitude, srid]):
+            instance.geom = self._create_point(
+                longitude=longitude,
+                latitude=latitude,
+                srid=srid
             )
         return super().update(instance, validated_data)
 
