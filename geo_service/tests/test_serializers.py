@@ -12,17 +12,16 @@ from geo_service.serializers import (
 
 
 class PlaceSerializerTests(APITestCase):
-
     def setUp(self):
         self.place1 = Place.objects.create(
             name="Place 1",
             description="Description 1",
-            geom=Point(49.5883, 34.5514)
+            geom=Point(49.5883, 34.5514),
         )
         self.place2 = Place.objects.create(
             name="Place 2",
             description="Description 2",
-            geom=Point(48.9226, 24.7097)
+            geom=Point(48.9226, 24.7097),
         )
 
     def test_place_create_serializer(self):
@@ -30,7 +29,7 @@ class PlaceSerializerTests(APITestCase):
             "name": "Test Place",
             "description": "Test Description",
             "latitude": 34.5514,
-            "longitude": 49.5883
+            "longitude": 49.5883,
         }
         serializer = PlaceCreateSerializer(data=data)
         self.assertTrue(serializer.is_valid())
@@ -45,12 +44,14 @@ class PlaceSerializerTests(APITestCase):
         place = Place.objects.create(
             name="Test Place",
             description="This is a test place",
-            geom=Point(34.5514, 49.5883)
+            geom=Point(34.5514, 49.5883),
         )
         serializer = PlaceListSerializer(place)
         self.assertEqual(serializer.data["id"], place.id)
         self.assertEqual(serializer.data["name"], "Test Place")
-        self.assertEqual(serializer.data["description"], "This is a test place")
+        self.assertEqual(
+            serializer.data["description"], "This is a test place"
+        )
         self.assertIsNotNone(serializer.data["latitude"])
         self.assertIsNotNone(serializer.data["longitude"])
 
@@ -58,12 +59,14 @@ class PlaceSerializerTests(APITestCase):
         place = Place.objects.create(
             name="Test Place",
             description="This is a test place",
-            geom=Point(34.5514, 49.5883)
+            geom=Point(34.5514, 49.5883),
         )
         serializer = PlaceDetailSerializer(place)
         self.assertEqual(serializer.data["id"], place.id)
         self.assertEqual(serializer.data["name"], "Test Place")
-        self.assertEqual(serializer.data["description"], "This is a test place")
+        self.assertEqual(
+            serializer.data["description"], "This is a test place"
+        )
         self.assertIsNotNone(serializer.data["latitude"])
         self.assertIsNotNone(serializer.data["longitude"])
 
@@ -71,13 +74,15 @@ class PlaceSerializerTests(APITestCase):
         place = Place.objects.create(
             name="Test Place",
             description="This is a test place",
-            geom=Point(34.5514, 49.5883)
+            geom=Point(34.5514, 49.5883),
         )
         place.distance = Distance(m=1000)
         serializer = NearestPointSerializer(place)
         self.assertEqual(serializer.data["id"], place.id)
         self.assertEqual(serializer.data["name"], "Test Place")
-        self.assertEqual(serializer.data["description"], "This is a test place")
+        self.assertEqual(
+            serializer.data["description"], "This is a test place"
+        )
         self.assertIsNotNone(serializer.data["latitude"])
         self.assertIsNotNone(serializer.data["longitude"])
         self.assertEqual(serializer.data["distance"], 1000)

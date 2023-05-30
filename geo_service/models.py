@@ -9,7 +9,9 @@ class Place(models.Model):
 
     def save(self, *args, **kwargs):
         if Place.objects.filter(geom=self.geom).exists():
-            raise ValidationError("A place with the same coordinates already exists.")
+            raise ValidationError(
+                "A place with the same coordinates already exists."
+            )
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:

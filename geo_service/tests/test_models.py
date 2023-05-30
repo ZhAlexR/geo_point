@@ -8,6 +8,6 @@ class PlaceModelTests(TestCase):
         place = Place.objects.create(
             name="Test Place",
             description="This is a test place",
-            geom=Point(34.5514, 49.5883)
+            geom=Point(34.5514, 49.5883),
         )
         self.assertEqual(str(place), "Test Place")

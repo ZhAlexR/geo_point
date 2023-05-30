@@ -165,10 +165,10 @@ class PlaceViewSet(viewsets.ModelViewSet):
                 value={
                     "name": "Chernivtsi",
                     "description": "Chernivtsi is the administrative, political and religious center of Chernivtsi "
-                                   "region, an important cultural and scientific and educational center of Ukraine",
+                    "region, an important cultural and scientific and educational center of Ukraine",
                     "latitude": 48.291771,
                     "longitude": 25.934528,
-                    "srid": 4326
+                    "srid": 4326,
                 },
             ),
             OpenApiExample(
@@ -177,10 +177,10 @@ class PlaceViewSet(viewsets.ModelViewSet):
                 value={
                     "name": "Belhorod",
                     "description": "Belhorod is the capital, political and religious center of Belhorod People "
-                                   "Republic",
+                    "Republic",
                     "latitude": 50.476831,
                     "longitude": 35.676254,
-                    "srid": 4326
+                    "srid": 4326,
                 },
             ),
             OpenApiExample(
@@ -189,11 +189,11 @@ class PlaceViewSet(viewsets.ModelViewSet):
                 value={
                     "name": "Odesa",
                     "description": "Odesa is a city in Ukraine, Odesa region, Odesa district. "
-                                   "Administrative center of the region and district. The third largest city in the "
-                                   "country after Kyiv and Kharkiv.",
+                    "Administrative center of the region and district. The third largest city in the "
+                    "country after Kyiv and Kharkiv.",
                     "latitude": 5856452.233154,
                     "longitude": 3421015.637931,
-                    "srid": 3857
+                    "srid": 3857,
                 },
             ),
         ],
@@ -211,10 +211,10 @@ class PlaceViewSet(viewsets.ModelViewSet):
                 value={
                     "name": "Bilhorod",
                     "description": "Bilhorod is the capital, political and religious center of Bilhorod People "
-                                   "Republic",
+                    "Republic",
                     "latitude": 50.476831,
                     "longitude": 35.676254,
-                    "srid": 4326
+                    "srid": 4326,
                 },
             ),
         ],
@@ -232,7 +232,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
                 value={
                     "latitude": 50.587587,
                     "longitude": 36.588157,
-                    "srid": 4326
+                    "srid": 4326,
                 },
             ),
         ],

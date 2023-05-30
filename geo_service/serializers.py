@@ -28,7 +28,9 @@ class PlaceSerializer(serializers.ModelSerializer):
         longitude = attrs.get("geom").get("x")
         srid = attrs.get("geom").get("srid")
 
-        point = self._create_point(longitude=longitude, latitude=latitude, srid=srid)
+        point = self._create_point(
+            longitude=longitude, latitude=latitude, srid=srid
+        )
         if point.y < -180 or point.y > 180:
             raise serializers.ValidationError("Latitude is incorrect.")
         if point.x < -180 or point.y > 180:
@@ -54,10 +56,8 @@ class PlaceCreateSerializer(PlaceSerializer):
             name=name,
             description=description,
             geom=self._create_point(
-                longitude=longitude,
-                latitude=latitude,
-                srid=srid
-            )
+                longitude=longitude, latitude=latitude, srid=srid
+            ),
         )
         return place
 
@@ -79,9 +79,7 @@ class PlaceDetailSerializer(PlaceSerializer):
         srid = geom.get("srid")
         if all([latitude, longitude, srid]):
             instance.geom = self._create_point(
-                longitude=longitude,
-                latitude=latitude,
-                srid=srid
+                longitude=longitude, latitude=latitude, srid=srid
             )
         return super().update(instance, validated_data)
 

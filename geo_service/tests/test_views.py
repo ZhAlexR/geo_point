@@ -5,7 +5,9 @@ from rest_framework.test import APITestCase
 
 from geo_service.models import Place
 
-GET_NEAREST_POINT_LINK = "http://127.0.0.1:8000/api/geo/places/get_nearest_point/"
+GET_NEAREST_POINT_LINK = (
+    "http://127.0.0.1:8000/api/geo/places/get_nearest_point/"
+)
 
 
 class PlaceViewSetTestCase(APITestCase):
@@ -13,17 +15,17 @@ class PlaceViewSetTestCase(APITestCase):
         self.place1 = Place.objects.create(
             name="Place 1",
             description="Description 1",
-            geom=Point(49.5883, 34.5514)
+            geom=Point(49.5883, 34.5514),
         )
         self.place2 = Place.objects.create(
             name="Place 2",
             description="Description 2",
-            geom=Point(48.9226, 24.7097)
+            geom=Point(48.9226, 24.7097),
         )
         self.place3 = Place.objects.create(
             name="Place 3",
             description="Description 3",
-            geom=Point(49.5870, 34.5514)
+            geom=Point(49.5870, 34.5514),
         )
 
     def test_get_nearest_point_with_no_distance(self):
@@ -41,11 +43,7 @@ class PlaceViewSetTestCase(APITestCase):
 
     def test_get_nearest_point_with_no_point_inside_distance(self):
         url = GET_NEAREST_POINT_LINK
-        params = {
-            "latitude": 49.5863,
-            "longitude": 34.5514,
-            "distance": 10
-        }
+        params = {"latitude": 49.5863, "longitude": 34.5514, "distance": 10}
         response = self.client.get(url, params)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data["detail"], "No nearest point found.")
@@ -54,25 +52,29 @@ class PlaceViewSetTestCase(APITestCase):
         url = GET_NEAREST_POINT_LINK
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, "You have to provide latitude and longitude.")
+        self.assertEqual(
+            response.data, "You have to provide latitude and longitude."
+        )
 
     def test_get_nearest_point_with_invalid_data(self):
         url = GET_NEAREST_POINT_LINK
         params = {
             "latitude": "fffefes",
             "longitude": "adfe3334",
-            "distance": 10
+            "distance": 10,
         }
         response = self.client.get(url, params)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, "You have to provide valid latitude and longitude.")
+        self.assertEqual(
+            response.data, "You have to provide valid latitude and longitude."
+        )
 
     def test_get_nearest_point_with_few_points_inside_distance(self):
         url = GET_NEAREST_POINT_LINK
         params = {
             "latitude": 49.5863,
             "longitude": 34.5514,
-            "distance": 10_000_000
+            "distance": 10_000_000,
         }
         response = self.client.get(url, params)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
