@@ -120,7 +120,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
 
         if not self.is_number(latitude) or not self.is_number(longitude):
             return Response(
-                "You have to valid latitude and longitude.",
+                "You have to provide valid latitude and longitude.",
                 status=status.HTTP_400_BAD_REQUEST,
             )
         point = Point(float(longitude), float(latitude), srid=4326)
