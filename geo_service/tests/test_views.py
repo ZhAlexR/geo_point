@@ -1,7 +1,6 @@
 from django.contrib.gis.geos import Point
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.reverse import reverse_lazy
 from rest_framework.test import APITestCase
 
 from geo_service.models import Place
