@@ -31,6 +31,14 @@ class PlaceViewSet(viewsets.ModelViewSet):
             return PlaceDetailSerializer
         return PlaceCreateSerializer
 
+    @staticmethod
+    def is_number(string):
+        # Remove decimal point if present
+        string = string.replace(".", "")
+
+        # Check if the remaining string consists of digits only
+        return string.isdigit()
+
     @extend_schema(
         parameters=[
             OpenApiParameter(
@@ -98,13 +106,24 @@ class PlaceViewSet(viewsets.ModelViewSet):
         ],
         responses={200: NearestPointSerializer},
     )
-    @action(detail=False, methods=["get"])
+    @action(detail=False, methods=["get"], name="get-nearest-point")
     def get_nearest_point(self, request):
-        latitude = float(request.query_params.get("latitude"))
-        longitude = float(request.query_params.get("longitude"))
+        latitude = request.query_params.get("latitude")
+        longitude = request.query_params.get("longitude")
         distance = request.query_params.get("distance")
 
-        point = Point(longitude, latitude, srid=4326)
+        if latitude is None or longitude is None:
+            return Response(
+                "You have to provide latitude and longitude.",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not self.is_number(latitude) or not self.is_number(longitude):
+            return Response(
+                "You have to provide valid latitude and longitude.",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        point = Point(float(longitude), float(latitude), srid=4326)
         nearest_point = Place.objects.annotate(
             distance=Distance("geom", point)
         )
@@ -116,7 +135,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
 
         if nearest_point:
             serializer = self.get_serializer(nearest_point)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(
                 {"detail": "No nearest point found."},
@@ -149,6 +168,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
                     "region, an important cultural and scientific and educational center of Ukraine",
                     "latitude": 48.291771,
                     "longitude": 25.934528,
+                    "srid": 4326,
                 },
             ),
             OpenApiExample(
@@ -156,10 +176,24 @@ class PlaceViewSet(viewsets.ModelViewSet):
                 description="This example shows how to add Belhorod to database.",
                 value={
                     "name": "Belhorod",
-                    "description": "Bilhorod is the capital, political and religious center of Belhorod People "
+                    "description": "Belhorod is the capital, political and religious center of Belhorod People "
                     "Republic",
                     "latitude": 50.476831,
                     "longitude": 35.676254,
+                    "srid": 4326,
+                },
+            ),
+            OpenApiExample(
+                name="Add Odesa",
+                description="This example shows how to add Odesa to database with another SRID.",
+                value={
+                    "name": "Odesa",
+                    "description": "Odesa is a city in Ukraine, Odesa region, Odesa district. "
+                    "Administrative center of the region and district. The third largest city in the "
+                    "country after Kyiv and Kharkiv.",
+                    "latitude": 5856452.233154,
+                    "longitude": 3421015.637931,
+                    "srid": 3857,
                 },
             ),
         ],
@@ -180,6 +214,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
                     "Republic",
                     "latitude": 50.476831,
                     "longitude": 35.676254,
+                    "srid": 4326,
                 },
             ),
         ],
@@ -194,7 +229,11 @@ class PlaceViewSet(viewsets.ModelViewSet):
             OpenApiExample(
                 name="Change wrong Bilhorod coordinates",
                 description="Changing the coordinates of Grayvoron to Bilhorod (everyone is wrong sometimes)",
-                value={"latitude": 50.587587, "longitude": 36.588157},
+                value={
+                    "latitude": 50.587587,
+                    "longitude": 36.588157,
+                    "srid": 4326,
+                },
             ),
         ],
     )

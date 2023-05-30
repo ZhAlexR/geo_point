@@ -134,10 +134,9 @@ Change the part after `=` to your valid credentials, for example:
 docker compose build
 docker coppose up
 ```
-# <p style="text-align: center;">Enjoy your Cinema API!</p>
+# <p style="text-align: center;">Enjoy your GeoPoit API!</p>
 
 <div align="center">
     <img src="https://media.giphy.com/media/t3sZxY5zS5B0z5zMIz/giphy-downsized-large.gif" alt="">
 </div>
-
 
