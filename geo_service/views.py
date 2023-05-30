@@ -98,7 +98,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
         ],
         responses={200: NearestPointSerializer},
     )
-    @action(detail=False, methods=["get"])
+    @action(detail=False, methods=["get"], name="get-nearest-point")
     def get_nearest_point(self, request):
         latitude = float(request.query_params.get("latitude"))
         longitude = float(request.query_params.get("longitude"))
