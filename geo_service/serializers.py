@@ -1,15 +1,28 @@
+from django.contrib.gis import gdal
 from rest_framework import serializers
 from django.contrib.gis.geos import Point
+from django.conf import settings
+
 from geo_service.models import Place
 
 
 class PlaceSerializer(serializers.ModelSerializer):
     latitude = serializers.FloatField(source="geom.y")
     longitude = serializers.FloatField(source="geom.x")
+    srid = serializers.IntegerField(source="geom.srid", write_only=True)
 
     class Meta:
         model = Place
-        fields = ("id", "name", "description", "latitude", "longitude")
+        fields = ("id", "name", "description", "latitude", "longitude", "srid")
+
+    def validate_srid(self, srid):
+        try:
+            gdal.SpatialReference(srid)
+        except Exception:
+            raise serializers.ValidationError("Invalid SRID.")
+
+        return srid
+
 
 
 class PlaceCreateSerializer(PlaceSerializer):
@@ -18,8 +31,13 @@ class PlaceCreateSerializer(PlaceSerializer):
         description = validated_data.get("description")
         latitude = validated_data.get("geom").get("y")
         longitude = validated_data.get("geom").get("x")
+        srid = validated_data.get("geom").get("srid")
+        point = Point(x=longitude, y=latitude, srid=srid)
+        point.transform(settings.DEFAULT_SRID)
         place = Place.objects.create(
-            name=name, description=description, geom=Point(longitude, latitude)
+            name=name,
+            description=description,
+            geom=point
         )
         return place
 
@@ -39,7 +57,11 @@ class PlaceDetailSerializer(PlaceSerializer):
         latitude = geom.get("y")
         longitude = geom.get("x")
         if latitude is not None and longitude is not None:
-            instance.geom = Point(longitude, latitude)
+            instance.geom = Point(
+                x=longitude,
+                y=latitude,
+                srid=settings.DEFAULT_SRID
+            )
         return super().update(instance, validated_data)
 
 
