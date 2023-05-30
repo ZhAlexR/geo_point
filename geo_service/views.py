@@ -31,6 +31,14 @@ class PlaceViewSet(viewsets.ModelViewSet):
             return PlaceDetailSerializer
         return PlaceCreateSerializer
 
+    @staticmethod
+    def is_number(string):
+        # Remove decimal point if present
+        string = string.replace(".", "")
+
+        # Check if the remaining string consists of digits only
+        return string.isdigit()
+
     @extend_schema(
         parameters=[
             OpenApiParameter(
@@ -100,11 +108,22 @@ class PlaceViewSet(viewsets.ModelViewSet):
     )
     @action(detail=False, methods=["get"], name="get-nearest-point")
     def get_nearest_point(self, request):
-        latitude = float(request.query_params.get("latitude"))
-        longitude = float(request.query_params.get("longitude"))
+        latitude = request.query_params.get("latitude")
+        longitude = request.query_params.get("longitude")
         distance = request.query_params.get("distance")
 
-        point = Point(longitude, latitude, srid=4326)
+        if latitude is None or longitude is None:
+            return Response(
+                "You have to provide latitude and longitude.",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not self.is_number(latitude) or not self.is_number(longitude):
+            return Response(
+                "You have to valid latitude and longitude.",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        point = Point(float(longitude), float(latitude), srid=4326)
         nearest_point = Place.objects.annotate(
             distance=Distance("geom", point)
         )
@@ -116,7 +135,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
 
         if nearest_point:
             serializer = self.get_serializer(nearest_point)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(
                 {"detail": "No nearest point found."},
@@ -146,7 +165,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
                 value={
                     "name": "Chernivtsi",
                     "description": "Chernivtsi is the administrative, political and religious center of Chernivtsi "
-                    "region, an important cultural and scientific and educational center of Ukraine",
+                                   "region, an important cultural and scientific and educational center of Ukraine",
                     "latitude": 48.291771,
                     "longitude": 25.934528,
                 },
@@ -157,7 +176,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
                 value={
                     "name": "Belhorod",
                     "description": "Bilhorod is the capital, political and religious center of Belhorod People "
-                    "Republic",
+                                   "Republic",
                     "latitude": 50.476831,
                     "longitude": 35.676254,
                 },
@@ -177,7 +196,7 @@ class PlaceViewSet(viewsets.ModelViewSet):
                 value={
                     "name": "Bilhorod",
                     "description": "Bilhorod is the capital, political and religious center of Bilhorod People "
-                    "Republic",
+                                   "Republic",
                     "latitude": 50.476831,
                     "longitude": 35.676254,
                 },
